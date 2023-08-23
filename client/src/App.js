@@ -1,10 +1,11 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import GameIndex from "./games/GameIndex";
 
 function App() {
   return (
-    <div>
-      <h1>Hello World!</h1>
+    <div className="container">
+      <GameIndex />
     </div>
   );
 }
