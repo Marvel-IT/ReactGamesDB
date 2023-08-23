@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { apiGet } from "../utils/api";
+import GameTable from "./GameTable";
 
-const GameIndex = (props) => {
-    const [gameState, setGames] = useState([]);
+const GameIndex = () => {
+    const [gamesState, setGames] = useState([]);
 
     useEffect(() => {
         apiGet("/api/games").then((data) => setGames(data));
@@ -25,12 +26,9 @@ const GameIndex = (props) => {
 
     return (
         <div>
-            <h1>Hry</h1>
-            <ul>
-                {gameState.map((game) => (
-                    <li key={game._id}>{game.name}</li>
-                ))}
-            </ul>
+            <h1>Seznam her</h1>
+            <hr />
+            <GameTable items={gamesState} label="Počet her:" />
         </div>
     );
 };
