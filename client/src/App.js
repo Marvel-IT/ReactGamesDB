@@ -2,6 +2,8 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import GameIndex from "./games/GameIndex";
 import CompanyIndex from "./companies/CompanyIndex";
+import GameDetail from "./games/GameDetail";
+import CompanyDetail from "./companies/CompanyDetail";
 import {
   BrowserRouter as Router,
   Link,
@@ -32,8 +34,14 @@ export function App() {
 
         <Routes>
           <Route index element={<Navigate to={"/games"} />} />
-          <Route exact path="/games" element={<GameIndex/>} />
-          <Route exact path="/companies" element={<CompanyIndex/>} />
+          <Route path="/games">
+            <Route index element={<GameIndex />} />
+            <Route path="show/:id" element={<GameDetail />} />
+          </Route>
+          <Route path="/companies">
+            <Route index element={<CompanyIndex />} />
+            <Route path="show/:id" element={<CompanyDetail />} />
+          </Route>
         </Routes>
       </div>
 

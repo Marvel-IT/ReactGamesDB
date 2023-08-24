@@ -1,7 +1,7 @@
 
 const Role = Object.freeze({
-    PUBLISHER: "vydavatel",
-    DEVELOPER: "vývojář"
+    PUBLISHER: "publisher",
+    DEVELOPER: "developer"
 });
 
 export default Role;

@@ -45,6 +45,43 @@ const genres = ["Adventure", "Action", "RPG", "Fantasy", "Strategy", "Simulation
 const platform = ["PlayStation 5", "PlayStation 4", "Xbox Series", "Xbox One", "PC", "Nintendo"]
 //
 
+// validace vstupních dat
+function validateGame(game, required = true) {
+    const schema = Joi.object({
+        name:           Joi.string().min(3),
+        platform:       Joi.array().items(Joi.string().valid(...platform)).min(1),
+        publisherID:    Joi.string(),
+        developerID:    Joi.string(),
+        genres:         Joi.array().items(Joi.string().valid(...genres)).min(1),
+        isAvailable:    Joi.bool(),
+        pegi:           Joi.number()
+    });
+    return schema.validate(game, { presence: (required) ? "required" : "optional"});
+}
+
+function validateCompany(company, required = true) {
+    const schema = Joi.object({
+        name:           Joi.string().min(3),
+        founded:        Joi.number(),
+        headquarters:   Joi.string().min(2),
+        perex:          Joi.string().min(10),
+        role:           Joi.string().valid("developer", "publisher")
+    });
+    return schema.validate(company,{ presence: (required) ? "required" : "optional" });
+}
+
+function validateGet(getData) {
+    const schema = Joi.object({
+        limit:          Joi.number().min(1),
+        platform:       Joi.string().valid(...platform),
+        genre:          Joi.string().valid(...genres),
+        publisherID:    Joi.string().min(3),
+        developerID:    Joi.string().min(3)
+    })
+    return schema.validate(getData, { presence: "optional" });
+}
+
+
 // GET metody
 // vrátí všechny hry v databázi
 app.get('/api/games', (req, res) => {
@@ -78,8 +115,8 @@ async function getGameByID(id) {
         game = game.toJSON();
         let publisher = await Company.findById(game.publisherID).select("_id name");
         let developer = await Company.findById(game.developerID).select("_id name");
-        game.publisherID = publisher.toJSON();
-        game.developerID = developer.toJSON();
+        game.publisher = publisher.toJSON();
+        game.developer = developer.toJSON();
     }
     return game;
 }
@@ -117,9 +154,12 @@ app.get('/api/publishers', (req, res) => {
     let dbQuery = Company.find().where("role", "publisher");
     if (req.query.limit)
         dbQuery = dbQuery.limit(parseInt(req.query.limit));
-    dbQuery
-        .then(publishers => { res.json(publishers); })
-        .catch(err => { res.status(400).send("Chyba požadavku na distributory!"); });
+    dbQuery.then(publishers => { 
+        res.json(publishers); 
+    })
+        .catch(err => { 
+            res.status(400).send("Chyba požadavku na distributory!"); 
+        });
 });
 
 app.get('/api/companies/:id', (req, res) => {
@@ -130,6 +170,7 @@ app.get('/api/companies/:id', (req, res) => {
             res.json(company);
     });
 });
+
 
 app.get('/api/genres', (req, res) => {
     res.json(genres);
@@ -209,38 +250,3 @@ app.delete('/api/company/:id', (req, res) => {
         }).catch(err => { res.status(400).send("Nepodařilo se smazat firmu!") });
 });
 
-// validace vstupních dat
-function validateGame(game, required = true) {
-    const schema = Joi.object({
-        name:           Joi.string().min(3),
-        platform:       Joi.array().items(Joi.string().valid(...platform)).min(1),
-        publisherID:    Joi.string(),
-        developerID:    Joi.string(),
-        genres:         Joi.array().items(Joi.string().valid(...genres)).min(1),
-        isAvailable:    Joi.bool(),
-        pegi:           Joi.number()
-    });
-    return schema.validate(game, { presence: (required) ? "required" : "optional"});
-}
-
-function validateCompany(company, required = true) {
-    const schema = Joi.object({
-        name:           Joi.string().min(3),
-        founded:        Joi.number(),
-        headquarters:   Joi.string().min(2),
-        perex:          Joi.string().min(10),
-        role:           Joi.string().valid("developer", "publisher")
-    });
-    return schema.validate(company,{ presence: (required) ? "required" : "optional" });
-}
-
-function validateGet(getData) {
-    const schema = Joi.object({
-        limit:          Joi.number().min(1),
-        platform:       Joi.string().valid(...platform),
-        genre:          Joi.string().valid(...genres),
-        publisherID:    Joi.string().min(3),
-        developerID:    Joi.string().min(3)
-    })
-    return schema.validate(getData, { presence: "optional" });
-}
