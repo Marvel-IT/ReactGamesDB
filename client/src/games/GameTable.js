@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const GameTable = ({label, items}) => { // vybalení proměnných (kratší zápis props)
+const GameTable = ({label, items}) => { 
     return (
         <div>
             <p>
